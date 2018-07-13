@@ -12,7 +12,7 @@ function check_exit_status {
 }
 
 run_web_server() {
-    echo "Starting Apache web server"
+    echo ">>> Starting Apache web server"
     apache2-foreground
 }
 
@@ -23,10 +23,19 @@ setup_config_file() {
     else
         echo ">>> Creating wp-config.php"
         yes | cp -rf wp-config-sample.php wp-config.php
-        wp config set DB_HOST "${WORDPRESS_DB_HOST}" --add --type=constant --allow-root
-        wp config set DB_NAME "${WORDPRESS_DB_NAME}" --add --type=constant --allow-root
-        wp config set DB_USER "${WORDPRESS_DB_USER}" --add --type=constant --allow-root
-        wp config set DB_PASSWORD "${WORDPRESS_DB_PASSWORD}" --add --type=constant --allow-root
+        wp config set DB_HOST "${WORDPRESS_DB_HOST}" --add --type=constant --quiet --allow-root
+        wp config set DB_NAME "${WORDPRESS_DB_NAME}" --add --type=constant --quiet --allow-root
+        wp config set DB_USER "${WORDPRESS_DB_USER}" --add --type=constant --quiet --allow-root
+        wp config set DB_PASSWORD "${WORDPRESS_DB_PASSWORD}" --add --type=constant --quiet --allow-root
+
+        wp config set AUTH_KEY "$(pwgen -1 -c -n -s -y 128)" --add --type=constant --quiet --allow-root
+        wp config set SECURE_AUTH_KEY "$(pwgen -1 -c -n -s -y 128)" --add --type=constant --quiet --allow-root
+		wp config set LOGGED_IN_KEY "$(pwgen -1 -c -n -s -y 128)" --add --type=constant --quiet --allow-root
+		wp config set NONCE_KEY "$(pwgen -1 -c -n -s -y 128)" --add --type=constant --quiet --allow-root
+		wp config set AUTH_SALT "$(pwgen -1 -c -n -s -y 128)" --add --type=constant --quiet --allow-root
+		wp config set SECURE_AUTH_SALT "$(pwgen -1 -c -n -s -y 128)" --add --type=constant --quiet --allow-root
+		wp config set LOGGED_IN_SALT "$(pwgen -1 -c -n -s -y 128)" --add --type=constant --quiet --allow-root
+		wp config set NONCE_SALT "$(pwgen -1 -c -n -s -y 128)" --add --type=constant --quiet --allow-root
         echo ">>> Finished creating wp-config.php"
     fi
 }
@@ -69,6 +78,7 @@ install_wordpress() {
     cp /tmp/.htaccess "${WEB_ROOT_DIR}"
     chown -R www-data:www-data .
     echo ">>> Latest Wordpress was downloaded for language ${WORDPRESS_LANG}"
+    check_exit_status setup_config_file
     check_exit_status run_web_server
 }
 
@@ -84,7 +94,6 @@ else
        [[ -z ${WORDPRESS_DB_PASSWORD} ]] && \
        [[ -z ${WORDPRESS_OLD_DOMAIN} ]] && \
        [[ -z ${WORDPRESS_NEW_DOMAIN} ]]; then
-
         import_wordpress
     fi
 fi

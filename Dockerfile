@@ -2,7 +2,7 @@ FROM wordpress:apache
 
 LABEL com.lullabies.vendor="Lullabies"
 LABEL com.lullabies.version="1.0"
-LABEL com.lullabies.description="Base image containing Apache 2.4, PHP 7.2, MySQL Client, cURL and Nano editor"
+LABEL com.lullabies.description="Base image containing Apache 2.4, PHP 7.2, MySQL Client, cURL, Pwgen and Nano editor"
 
 ENV WEB_ROOT_DIR="/var/www/html"
 ENV WORDPRESS_LANG="pt_BR"
@@ -18,6 +18,7 @@ RUN apt-get update -y && apt-get install -y \
     mysql-client \
     curl \
     nano \
+    pwgen \
  && rm -rf /var/lib/apt/lists/*
 
 RUN curl -o /usr/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar

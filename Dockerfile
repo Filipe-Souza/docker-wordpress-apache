@@ -26,9 +26,7 @@ RUN apt-get update -y && dpkg -i /tmp/pwgen.deb
 
 RUN curl -o /usr/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 
-RUN chmod a+x /usr/bin/wp
-RUN chmod a+x /start
-RUN chmod a+x /usr/bin/apache2-foreground
+RUN chmod a+x /usr/bin/wp && chmod a+x /start && chmod a+x /usr/bin/apache2-foreground
 
 EXPOSE 80 443
 

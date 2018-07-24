@@ -14,12 +14,15 @@ COPY ./docker-entrypoint/apache/apache2-foreground.sh /usr/bin/apache2-foregroun
 
 COPY ./docker-entrypoint/wordpress/.htaccess /tmp/.htaccess
 
+COPY ./docker-entrypoint/debian/pwgen_2.08-1_amd64.deb /tmp/pwgen.deb
+
 RUN apt-get update -y && apt-get install -y \
     mysql-client \
     curl \
     nano \
-    pwgen \
  && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update -y && dpkg -i /tmp/pwgen.deb
 
 RUN curl -o /usr/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 

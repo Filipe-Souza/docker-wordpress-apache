@@ -17,25 +17,31 @@ run_web_server() {
 }
 
 setup_config_file() {
+    ls -la
     if [ ! -e wp-config-sample.php ]; then
         echo ">>> Wordpress sample config file not found. Please setup wp-config.php manually"
         run_web_server
     else
-        echo ">>> Creating wp-config.php"
+        echo ">>> Creating wp-config.php, copying the sample file"
         yes | cp -rf wp-config-sample.php wp-config.php
+
+        echo ">>> Setting database constants"
         wp config set DB_HOST "${WORDPRESS_DB_HOST}" --add --type=constant --quiet --allow-root
         wp config set DB_NAME "${WORDPRESS_DB_NAME}" --add --type=constant --quiet --allow-root
         wp config set DB_USER "${WORDPRESS_DB_USER}" --add --type=constant --quiet --allow-root
         wp config set DB_PASSWORD "${WORDPRESS_DB_PASSWORD}" --add --type=constant --quiet --allow-root
+        echo ">>> Done setting database constants"
 
-        wp config set AUTH_KEY "$(pwgen -1 -c -n -s -y 128)" --add --type=constant --quiet --allow-root
-        wp config set SECURE_AUTH_KEY "$(pwgen -1 -c -n -s -y 128)" --add --type=constant --quiet --allow-root
-		wp config set LOGGED_IN_KEY "$(pwgen -1 -c -n -s -y 128)" --add --type=constant --quiet --allow-root
-		wp config set NONCE_KEY "$(pwgen -1 -c -n -s -y 128)" --add --type=constant --quiet --allow-root
-		wp config set AUTH_SALT "$(pwgen -1 -c -n -s -y 128)" --add --type=constant --quiet --allow-root
-		wp config set SECURE_AUTH_SALT "$(pwgen -1 -c -n -s -y 128)" --add --type=constant --quiet --allow-root
-		wp config set LOGGED_IN_SALT "$(pwgen -1 -c -n -s -y 128)" --add --type=constant --quiet --allow-root
-		wp config set NONCE_SALT "$(pwgen -1 -c -n -s -y 128)" --add --type=constant --quiet --allow-root
+        echo ">>> Setting security constants"
+        wp config set AUTH_KEY "$(pwgen -1 -c -n -s -y -r \`\"\'\\ 128)" --add --type=constant --quiet --allow-root
+        wp config set SECURE_AUTH_KEY "$(pwgen -1 -c -n -s -y -r \`\"\'\\ 128)" --add --type=constant --quiet --allow-root
+		wp config set LOGGED_IN_KEY "$(pwgen -1 -c -n -s -y -r \`\"\'\\ 128)" --add --type=constant --quiet --allow-root
+		wp config set NONCE_KEY "$(pwgen -1 -c -n -s -y -r \`\"\'\\ 128)" --add --type=constant --quiet --allow-root
+		wp config set AUTH_SALT "$(pwgen -1 -c -n -s -y -r \`\"\'\\ 128)" --add --type=constant --quiet --allow-root
+		wp config set SECURE_AUTH_SALT "$(pwgen -1 -c -n -s -y -r \`\"\'\\ 128)" --add --type=constant --quiet --allow-root
+		wp config set LOGGED_IN_SALT "$(pwgen -1 -c -n -s -y -r \`\"\'\\ 128)" --add --type=constant --quiet --allow-root
+		wp config set NONCE_SALT "$(pwgen -1 -c -n -s -y -r \`\"\'\\ 128)" --add --type=constant --quiet --allow-root
+		echo ">>> Done setting security constants"
         echo ">>> Finished creating wp-config.php"
     fi
 }

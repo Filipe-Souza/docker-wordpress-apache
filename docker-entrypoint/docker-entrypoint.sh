@@ -69,9 +69,18 @@ check_htaccess() {
     fi
 }
 
+wait_for_database() {
+    if [ ! -z ${MUST_WAIT_DB} ]; then
+        echo ">>> Ok, waiting for database for ${MUST_WAIT_DB} seconds."
+        sleep ${MUST_WAIT_DB}
+        echo ">>> Finished waiting for database."
+    fi
+}
+
 import_wordpress() {
     echo ">>> Importing existing installation of Wordpress"
     check_exit_status setup_config_file
+    check_exit_status wait_for_database
     check_exit_status check_database_import
     check_exit_status replace_site_urls
     check_exit_status check_htaccess
@@ -94,7 +103,7 @@ if ! [ -e index.php -a -e wp-includes/version.php ]; then
     echo ">>> Proceeding to Wordpress fresh install"
     install_wordpress
 else
-    if [ -z ${WORDPRESS_DB_HOST} ] || [ -z ${WORDPRESS_DB_USER} ] || [ -z ${WORDPRESS_DB_NAME} ] || [ -z ${WORDPRESS_DB_PASSWORD} ] || [ -z ${WORDPRESS_OLD_DOMAIN} ] || [ -z ${WORDPRESS_NEW_DOMAIN} ]; then
+    if [ -z ${WORDPRESS_DB_HOST} ] || [ -z ${WORDPRESS_DB_USER} ] || [ -z ${WORDPRESS_DB_NAME} ] || [ -z ${WORDPRESS_DB_PASSWORD} ] || [ -z ${WORDPRESS_OLD_DOMAIN} ] || [ -z ${WORDPRESS_NEW_DOMAIN} ] || [ -z ${MUST_WAIT_DB} ]; then
         echo ">>> One or more variables are not set, cannot proceed with importation";
     else
         echo ">>> Proceeding to Wordpress installation import"

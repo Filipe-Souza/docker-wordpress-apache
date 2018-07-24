@@ -6,6 +6,7 @@ LABEL com.lullabies.description="Base image containing Apache 2.4, PHP 7.2, MySQ
 
 ENV WEB_ROOT_DIR="/var/www/html"
 ENV WORDPRESS_LANG="pt_BR"
+ENV MUST_WAIT_DB=10
 
 COPY ./docker-entrypoint/docker-entrypoint.sh /start
 

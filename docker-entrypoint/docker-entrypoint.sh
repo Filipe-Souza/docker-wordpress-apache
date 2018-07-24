@@ -91,15 +91,13 @@ install_wordpress() {
 echo ">>> Setting up application"
 
 if ! [ -e index.php -a -e wp-includes/version.php ]; then
-    echo ">>> Proceding to Wordpress fresh install"
+    echo ">>> Proceeding to Wordpress fresh install"
     install_wordpress
 else
-    if [[ -z ${WORDPRESS_DB_HOST} ]] && \
-       [[ -z ${WORDPRESS_DB_USER} ]] && \
-       [[ -z ${WORDPRESS_DB_NAME} ]] && \
-       [[ -z ${WORDPRESS_DB_PASSWORD} ]] && \
-       [[ -z ${WORDPRESS_OLD_DOMAIN} ]] && \
-       [[ -z ${WORDPRESS_NEW_DOMAIN} ]]; then
+    if [ -z ${WORDPRESS_DB_HOST} ] || [ -z ${WORDPRESS_DB_USER} ] || [ -z ${WORDPRESS_DB_NAME} ] || [ -z ${WORDPRESS_DB_PASSWORD} ] || [ -z ${WORDPRESS_OLD_DOMAIN} ] || [ -z ${WORDPRESS_NEW_DOMAIN} ]; then
+        echo ">>> One or more variables are not set, cannot proceed with importation";
+    else
+        echo ">>> Proceeding to Wordpress installation import phrases"
         import_wordpress
     fi
 fi

@@ -47,16 +47,20 @@ setup_config_file() {
 }
 
 check_database_import() {
+    echo ">>> Started SQL file import verification"
     if [ ! -e "${WEB_ROOT_DIR}"/"${WORDPRESS_DB_FILE}" ]; then
         echo ">>> SQL file not specified, skipping database import"
     else
+        echo ">>> Database file specified, importing..."
         wp db import "${WEB_ROOT_DIR}"/"${WORDPRESS_DB_FILE}" --allow-root
     fi
+    echo ">>> Done SQL file verification"
 }
 
 replace_site_urls() {
     echo ">>> Replacing database values ${WORDPRESS_OLD_DOMAIN} with ${WORDPRESS_NEW_DOMAIN}"
     wp search-replace "${WORDPRESS_OLD_DOMAIN}" "${WORDPRESS_NEW_DOMAIN}" --allow-root
+    echo ">>> Done replacing URL's"
 }
 
 check_htaccess() {
@@ -78,7 +82,6 @@ wait_for_database() {
 }
 
 import_wordpress() {
-    echo ">>> Importing existing installation of Wordpress"
     check_exit_status setup_config_file
     check_exit_status wait_for_database
     check_exit_status check_database_import

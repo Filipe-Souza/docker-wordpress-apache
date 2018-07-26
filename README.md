@@ -14,6 +14,7 @@ WORDPRESS_LANG - Set default Wordpress new installation language
 
 Below the variables do be used in a imported installation of Wordpress:
 
+MUST_WAIT_DB - Set the amount of time in seconds that the importation process should wait for database be ready (in seconds).
 WORDPRESS_DB_FILE - Set the SQL file to be imported
 WORDPRESS_OLD_DOMAIN - Set the old domain in the SQL file to be set in database
 WORDPRESS_NEW_DOMAIN - Set the new domain to be set in database

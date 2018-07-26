@@ -86,9 +86,19 @@ wait_for_database() {
 }
 
 fix_permissions() {
+    echo ">>> Setting permissions for files and folders"
     chown www-data:www-data  -R .
-    find . -type d -exec chmod 755 {} \;
-    find . -type f -exec chmod 644 {} \;
+
+    if [ "${WORDPRESS_ENV}" = "dev" ]; then
+        echo ">> Dev mode started, the group will have -rw-rwxr-- permissions for files and -rwxrwxr-x for folders"
+        find . -type d -exec chmod 775 {} \;
+        find . -type f -exec chmod 674 {} \;
+    else
+        echo ">> Prod mode started, the group will have -rw-r--r-- permissions for files and -rwxr-xr-x for folders"
+        find . -type d -exec chmod 755 {} \;
+        find . -type f -exec chmod 644 {} \;
+    fi;
+    echo ">>> Done setting permissions for files and folders"
 }
 
 import_wordpress() {

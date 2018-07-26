@@ -21,10 +21,8 @@ COPY ./docker-entrypoint/debian/pwgen_2.08-1_amd64.deb /tmp/pwgen.deb
 RUN apt-get update -y && apt-get install -y \
     mysql-client \
     curl \
-    nano \
- && rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update -y && dpkg -i /tmp/pwgen.deb
+    nano && \
+    dpkg -i /tmp/pwgen.deb && rm -rf /var/lib/apt/lists/* /tmp/pwgen.deb
 
 RUN curl -o /usr/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 

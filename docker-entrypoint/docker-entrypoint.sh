@@ -85,6 +85,12 @@ wait_for_database() {
     fi
 }
 
+fix_permissions() {
+    chown www-data:www-data  -R .
+    find . -type d -exec chmod 755 {} \;
+    find . -type f -exec chmod 644 {} \;
+}
+
 import_wordpress() {
     check_exit_status setup_config_file
     check_exit_status wait_for_database
@@ -93,12 +99,6 @@ import_wordpress() {
     check_exit_status check_htaccess
     check_exit_status fix_permissions
     check_exit_status run_web_server
-}
-
-fix_permissions() {
-    chown www-data:www-data  -R .
-    find . -type d -exec chmod 755 {} \;
-    find . -type f -exec chmod 644 {} \;
 }
 
 install_wordpress() {

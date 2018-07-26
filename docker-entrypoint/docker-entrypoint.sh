@@ -1,5 +1,9 @@
 #!/bin/bash
 
+RED='\033[0;31m'
+NC='\033[0m'
+YELLOW='\033[1;33m'
+
 cd "${WEB_ROOT_DIR}" || exit
 
 function check_exit_status {
@@ -17,7 +21,6 @@ run_web_server() {
 }
 
 setup_config_file() {
-    ls -la
     if [ ! -e wp-config-sample.php ]; then
         echo ">> Wordpress sample config file not found. Please setup wp-config.php manually using the following info: "
         echo ">> define('DB_HOST', '${WORDPRESS_DB_HOST}');"
@@ -90,11 +93,11 @@ fix_permissions() {
     chown www-data:www-data  -R .
 
     if [ "${WORDPRESS_ENV}" = "dev" ]; then
-        echo ">> Dev mode started, the group will have -rw-rwxr-- permissions for files and -rwxrwxr-x for folders"
+        echo -e ">> Dev mode started, the group will have ${YELLOW}-rw-rwxr--${NC} permissions for files and ${YELLOW}-rwxrwxr-x${NC} for folders"
         find . -type d -exec chmod 775 {} \;
         find . -type f -exec chmod 674 {} \;
     else
-        echo ">> Prod mode started, the group will have -rw-r--r-- permissions for files and -rwxr-xr-x for folders"
+        echo -e ">> Prod mode started, the group will have ${YELLOW}-rw-r--r--${NC} permissions for files and ${YELLOW}-rwxr-xr-x${NC} for folders"
         find . -type d -exec chmod 755 {} \;
         find . -type f -exec chmod 644 {} \;
     fi;
@@ -116,7 +119,14 @@ install_wordpress() {
     wp core download --locale="${WORDPRESS_LANG}" --allow-root
     cp /tmp/.htaccess "${WEB_ROOT_DIR}"
     echo ">>> Latest Wordpress was downloaded for language ${WORDPRESS_LANG}"
-    check_exit_status setup_config_file
+
+    if [ -z ${WORDPRESS_DB_HOST} ] || [ -z ${WORDPRESS_DB_USER} ] || [ -z ${WORDPRESS_DB_NAME} ] || [ -z ${WORDPRESS_DB_PASSWORD} ] || [ -z ${WORDPRESS_TABLE_PREFIX} ]; then
+        echo -e ">> File wp-config.php will be ${RED}not${NC} generated. You must proceed with Wordpress database setup."
+    else
+        echo ">> File wp-config.php will be generated for this fresh install. You must proceed with site setup."
+        check_exit_status setup_config_file
+    fi
+
     check_exit_status fix_permissions
     check_exit_status run_web_server
 }
@@ -127,6 +137,7 @@ if ! [ -e index.php -a -e wp-includes/version.php ]; then
     echo ">> Proceeding to Wordpress fresh install"
     install_wordpress
 else
+    echo ">> Trying to make a Wordpress install import"
     if [ -z ${WORDPRESS_DB_HOST} ] || [ -z ${WORDPRESS_DB_USER} ] || [ -z ${WORDPRESS_DB_NAME} ] || [ -z ${WORDPRESS_DB_PASSWORD} ] || [ -z ${WORDPRESS_OLD_DOMAIN} ] || [ -z ${WORDPRESS_NEW_DOMAIN} ] || [ -z ${MUST_WAIT_DB} ]; then
         echo ">> One or more variables are not set, cannot proceed with importation";
     else

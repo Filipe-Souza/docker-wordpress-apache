@@ -19,20 +19,24 @@ run_web_server() {
 setup_config_file() {
     ls -la
     if [ ! -e wp-config-sample.php ]; then
-        echo ">>> Wordpress sample config file not found. Please setup wp-config.php manually"
+        echo ">> Wordpress sample config file not found. Please setup wp-config.php manually using the following info: "
+        echo ">> define('DB_HOST', '${WORDPRESS_DB_HOST}');"
+        echo ">> define('DB_NAME', '${WORDPRESS_DB_NAME}');"
+        echo ">> define('DB_USER', '${WORDPRESS_DB_USER}');"
+        echo ">> define('DB_PASSWORD', ${WORDPRESS_DB_PASSWORD}');"
         run_web_server
     else
-        echo ">>> Creating wp-config.php, copying the sample file"
+        echo ">> Creating wp-config.php, copying the sample file"
         yes | cp -rf wp-config-sample.php wp-config.php
 
-        echo ">>> Setting database constants"
+        echo ">> Setting database constants"
         wp config set DB_HOST "${WORDPRESS_DB_HOST}" --add --type=constant --quiet --allow-root
         wp config set DB_NAME "${WORDPRESS_DB_NAME}" --add --type=constant --quiet --allow-root
         wp config set DB_USER "${WORDPRESS_DB_USER}" --add --type=constant --quiet --allow-root
         wp config set DB_PASSWORD "${WORDPRESS_DB_PASSWORD}" --add --type=constant --quiet --allow-root
-        echo ">>> Done setting database constants"
+        echo ">> Done setting database constants"
 
-        echo ">>> Setting security constants"
+        echo ">> Setting security constants"
         wp config set AUTH_KEY "$(pwgen -1 -c -n -s -y -r \`\"\'\\ 128)" --add --type=constant --quiet --allow-root
         wp config set SECURE_AUTH_KEY "$(pwgen -1 -c -n -s -y -r \`\"\'\\ 128)" --add --type=constant --quiet --allow-root
 		wp config set LOGGED_IN_KEY "$(pwgen -1 -c -n -s -y -r \`\"\'\\ 128)" --add --type=constant --quiet --allow-root
@@ -41,17 +45,17 @@ setup_config_file() {
 		wp config set SECURE_AUTH_SALT "$(pwgen -1 -c -n -s -y -r \`\"\'\\ 128)" --add --type=constant --quiet --allow-root
 		wp config set LOGGED_IN_SALT "$(pwgen -1 -c -n -s -y -r \`\"\'\\ 128)" --add --type=constant --quiet --allow-root
 		wp config set NONCE_SALT "$(pwgen -1 -c -n -s -y -r \`\"\'\\ 128)" --add --type=constant --quiet --allow-root
-		echo ">>> Done setting security constants"
-        echo ">>> Finished creating wp-config.php"
+		echo ">> Done setting security constants"
     fi
+    echo ">>> Finished creating wp-config.php"
 }
 
 check_database_import() {
     echo ">>> Started SQL file import verification"
     if [ ! -e "${WEB_ROOT_DIR}"/"${WORDPRESS_DB_FILE}" ]; then
-        echo ">>> SQL file not specified, skipping database import"
+        echo ">> SQL file not specified, skipping database import"
     else
-        echo ">>> Database file specified, importing..."
+        echo ">> Database file specified, importing..."
         wp db import "${WEB_ROOT_DIR}"/"${WORDPRESS_DB_FILE}" --allow-root
     fi
     echo ">>> Done SQL file verification"
@@ -66,18 +70,18 @@ replace_site_urls() {
 check_htaccess() {
     echo ">>> Checking if .htaccess need to be touched"
     if [ ! -e .htaccess ]; then
-        echo ">>> Copying .htaccess"
+        echo ">> Copying .htaccess"
         cp /tmp/.htaccess "${WEB_ROOT_DIR}"
     else
-        echo ">>> Current .htaccess will be not touched"
+        echo ">> Current .htaccess will be not touched"
     fi
 }
 
 wait_for_database() {
     if [ ! -z ${MUST_WAIT_DB} ]; then
-        echo ">>> Ok, waiting for database for ${MUST_WAIT_DB} seconds."
+        echo ">> Ok, waiting for database for ${MUST_WAIT_DB} seconds."
         sleep ${MUST_WAIT_DB}
-        echo ">>> Finished waiting for database."
+        echo ">> Finished waiting for database."
     fi
 }
 
@@ -103,13 +107,13 @@ install_wordpress() {
 echo ">>> Setting up application"
 
 if ! [ -e index.php -a -e wp-includes/version.php ]; then
-    echo ">>> Proceeding to Wordpress fresh install"
+    echo ">> Proceeding to Wordpress fresh install"
     install_wordpress
 else
     if [ -z ${WORDPRESS_DB_HOST} ] || [ -z ${WORDPRESS_DB_USER} ] || [ -z ${WORDPRESS_DB_NAME} ] || [ -z ${WORDPRESS_DB_PASSWORD} ] || [ -z ${WORDPRESS_OLD_DOMAIN} ] || [ -z ${WORDPRESS_NEW_DOMAIN} ] || [ -z ${MUST_WAIT_DB} ]; then
-        echo ">>> One or more variables are not set, cannot proceed with importation";
+        echo ">> One or more variables are not set, cannot proceed with importation";
     else
-        echo ">>> Proceeding to Wordpress installation import"
+        echo ">> Proceeding to Wordpress installation import"
         import_wordpress
     fi
 fi

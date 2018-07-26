@@ -91,16 +91,23 @@ import_wordpress() {
     check_exit_status check_database_import
     check_exit_status replace_site_urls
     check_exit_status check_htaccess
+    check_exit_status fix_permissions
     check_exit_status run_web_server
+}
+
+fix_permissions() {
+    chown www-data:www-data  -R .
+    find . -type d -exec chmod 755 {} \;
+    find . -type f -exec chmod 644 {} \;
 }
 
 install_wordpress() {
     echo ">>> Wordpress installation not found in ${WEB_ROOT_DIR} - installing..."
     wp core download --locale="${WORDPRESS_LANG}" --allow-root
     cp /tmp/.htaccess "${WEB_ROOT_DIR}"
-    chown -R www-data:www-data .
     echo ">>> Latest Wordpress was downloaded for language ${WORDPRESS_LANG}"
     check_exit_status setup_config_file
+    check_exit_status fix_permissions
     check_exit_status run_web_server
 }
 

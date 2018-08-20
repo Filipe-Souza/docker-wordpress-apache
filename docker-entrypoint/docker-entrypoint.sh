@@ -27,6 +27,9 @@ setup_config_file() {
         echo ">> define('DB_NAME', '${WORDPRESS_DB_NAME}');"
         echo ">> define('DB_USER', '${WORDPRESS_DB_USER}');"
         echo ">> define('DB_PASSWORD', ${WORDPRESS_DB_PASSWORD}');"
+        echo ">> define('WP_HOME', ${WORDPRESS_HOME_URL}');"
+        echo ">> define('WP_SITEURL', ${WORDPRESS_SITEURL}');"
+
         run_web_server
     else
         echo ">> Creating wp-config.php, copying the sample file"
@@ -65,9 +68,16 @@ check_database_import() {
 }
 
 replace_site_urls() {
-    echo ">>> Replacing database values ${WORDPRESS_OLD_DOMAIN} with ${WORDPRESS_NEW_DOMAIN}"
-    wp search-replace "${WORDPRESS_OLD_DOMAIN}" "${WORDPRESS_NEW_DOMAIN}" --allow-root
-    echo ">>> Done replacing URL's"
+    if [ -z ${WORDPRESS_OLD_DOMAIN} ]; then
+        echo ">>> Old URL not defined, setting URL's in wp-config.php file"
+        wp config set WP_HOME "${WORDPRESS_NEW_DOMAIN}" --add --type=constant --quiet --allow-root
+        wp config set WP_SITEURL "${WORDPRESS_NEW_DOMAIN}" --add --type=constant --quiet --allow-root
+        echo ">>> Done setting additional URL's in wp-config.php file"
+    else
+        echo ">>> Replacing database values ${WORDPRESS_OLD_DOMAIN} with ${WORDPRESS_NEW_DOMAIN}"
+        wp search-replace "${WORDPRESS_OLD_DOMAIN}" "${WORDPRESS_NEW_DOMAIN}" --allow-root
+        echo ">>> Done replacing URL's values"
+    fi
 }
 
 check_htaccess() {
@@ -144,7 +154,7 @@ if ! [ -e index.php -a -e wp-includes/version.php ]; then
     install_wordpress
 else
     echo ">> Trying to make a Wordpress install import"
-    if [ -z ${WORDPRESS_DB_HOST} ] || [ -z ${WORDPRESS_DB_USER} ] || [ -z ${WORDPRESS_DB_NAME} ] || [ -z ${WORDPRESS_DB_PASSWORD} ] || [ -z ${WORDPRESS_OLD_DOMAIN} ] || [ -z ${WORDPRESS_NEW_DOMAIN} ] || [ -z ${MUST_WAIT_DB} ]; then
+    if [ -z ${WORDPRESS_DB_HOST} ] || [ -z ${WORDPRESS_DB_USER} ] || [ -z ${WORDPRESS_DB_NAME} ] || [ -z ${WORDPRESS_DB_PASSWORD} ] || [ -z ${WORDPRESS_NEW_DOMAIN} ] || [ -z ${MUST_WAIT_DB} ]; then
         echo ">> One or more variables are not set, cannot proceed with importation";
     else
         echo ">> Proceeding to Wordpress installation import"

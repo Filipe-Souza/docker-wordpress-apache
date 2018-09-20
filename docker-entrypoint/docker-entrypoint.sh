@@ -98,6 +98,29 @@ wait_for_database() {
     fi
 }
 
+additional_flags() {
+    echo ">>> Checking for the wp-config-flags for additional flags"
+    if [ ! -e "${WORDPRESS_EXTRA_FLAGS_FILE}" ]; then
+        echo ">> Additional flags file not found, skipping."
+    else
+        echo ">> Additional flags file found, adding flags. This may take a while..."
+        echo ">> Reading flag(s) in file"
+            while IFS= read -r line; do
+                declare ${line};
+            done < "${WORDPRESS_EXTRA_FLAGS_FILE}"
+        echo ">> Done reading flag(s) file, "
+
+        for var in "${!WP_@}"; do
+            FLAG_NAME="$var"
+            FLAG_NAME=${FLAG_NAME#"WP_"}
+            echo ">> Setting up flag ${FLAG_NAME} with value ${!var}"
+            wp config set ${FLAG_NAME} ${!var} --add --type=constant --raw --quiet --allow-root
+            echo ">> Done setting up flag"
+        done
+        echo ">>> Done setting up additional flags"
+    fi
+}
+
 fix_permissions() {
     echo ">>> Setting permissions for files and folders"
     chown www-data:www-data  -R .
@@ -126,6 +149,7 @@ import_wordpress() {
     check_exit_status check_database_import
     check_exit_status replace_site_urls
     check_exit_status check_htaccess
+    check_exit_status additional_flags
     check_exit_status fix_permissions
     check_exit_status run_web_server
 }

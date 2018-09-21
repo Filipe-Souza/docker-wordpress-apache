@@ -36,7 +36,7 @@ it makes more easily to setup the needed variables in wp-config.php automated co
 
 I will let a example docker-compose.yml at the end of documentation.
 
-## ENV VARIABLES
+## Environment variables
 
 In this image, I use environment variables to configure the start script, telling how to write the wp-config.php, wait 
 for database initialization timeout, replaces old urls into new ones for news environments (from https://example.com to
@@ -54,7 +54,7 @@ http://localhost for example), and adding other specific flags in wp-config.php 
   * **Required**: Set the user database password;
 * _WORDPRESS_EXTRA_FLAGS_FILE_
   * **Optional**: Set the path of the file containing extras flags to be written in wp-config.php. See 
-[writing extra flags]() section to configure the file correctly.
+[writing extra flags](#example-docker-compose-file) section to configure the file correctly.
 
 ### Variables needed in a new installation of Wordpress
 
@@ -78,4 +78,42 @@ the specified language.
 * _WORDPRESS_NEW_DOMAIN_
   * **Required**: Set the new domain to be set in database. If the _WORDPRESS_OLD_DOMAIN_ variable is not specified, the
   script will setup the constants [WP_SITEURL](https://codex.wordpress.org/Editing_wp-config.php#WP_SITEURL) and
-  [WP_HOME](https://codex.wordpress.org/Editing_wp-config.php#WP_HOME) on wp-config.php file with this value
+  [WP_HOME](https://codex.wordpress.org/Editing_wp-config.php#WP_HOME) on wp-config.php file with this value.
+
+### Example docker-compose file
+
+```yaml
+ 
+version: '3'
+services:
+  db:
+    image: mariadb
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: mysecretpassword
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: root
+      MYSQL_PASSWORD: myothersecretpassword
+    restart: unless-stopped
+  wordpress:
+    image: my_wordpress_image:latest
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./:/var/www/html
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_PASSWORD: mysecretpassword
+      WORDPRESS_OLD_DOMAIN: 'https://example.com'
+      WORDPRESS_NEW_DOMAIN: 'http://localhost'
+      WORDPRESS_DB_FILE: example_database_script_to_import.sql
+      WORDPRESS_EXTRA_FLAGS_FILE: .wp-config-flags
+      MUST_WAIT_DB: 30
+    depends_on:
+      - db
+    restart: unless-stopped
+```

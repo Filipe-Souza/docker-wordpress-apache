@@ -34,7 +34,7 @@ For Wordpress you must setup a MySQL/MariaDB server, create a database in it and
 recommend that you setup a MySQL/MariaDB container using [docker-compose](https://docs.docker.com/compose/overview/),
 it makes more easily to setup the needed variables in wp-config.php automated configuration.
 
-I will let a example docker-compose.yml at the end of documentation.
+See the example [docker-compose.yml](#example-docker-compose-file) file at the end of documentation.
 
 ## Environment variables
 
@@ -54,7 +54,7 @@ http://localhost for example), and adding other specific flags in wp-config.php 
   * **Required**: Set the user database password;
 * _WORDPRESS_EXTRA_FLAGS_FILE_
   * **Optional**: Set the path of the file containing extras flags to be written in wp-config.php. See 
-[writing extra flags](#example-docker-compose-file) section to configure the file correctly.
+[writing extra flags](TODO) section to configure the file correctly.
 
 ### Variables needed in a new installation of Wordpress
 

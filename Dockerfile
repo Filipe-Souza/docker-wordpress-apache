@@ -1,7 +1,7 @@
 FROM wordpress:apache
 
 LABEL com.lullabies.vendor="Lullabies"
-LABEL com.lullabies.version="1.0"
+LABEL com.lullabies.version="2.0"
 LABEL com.lullabies.description="Base image containing Apache 2.4, PHP 7.2, MySQL Client, cURL, Pwgen 2.08, WP CLI and Nano editor"
 
 ENV WEB_ROOT_DIR="/var/www/html"

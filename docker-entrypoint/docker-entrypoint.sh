@@ -88,9 +88,15 @@ replace_site_urls() {
         wp config set WP_SITEURL "${WORDPRESS_NEW_DOMAIN}" --add --type=constant --quiet --allow-root
         echo ">>> Done setting additional URL's in wp-config.php file"
     else
-        echo ">>> Replacing database values ${WORDPRESS_OLD_DOMAIN} with ${WORDPRESS_NEW_DOMAIN}"
-        wp search-replace "${WORDPRESS_OLD_DOMAIN}" "${WORDPRESS_NEW_DOMAIN}" --allow-root
-        echo ">>> Done replacing URL's values"
+        if [ -z ${WORDPRESS_NETWORK} ]; then
+            echo ">> Replacing database values ${WORDPRESS_OLD_DOMAIN} with ${WORDPRESS_NEW_DOMAIN}"
+            wp search-replace "${WORDPRESS_OLD_DOMAIN}" "${WORDPRESS_NEW_DOMAIN}" --allow-root
+            echo ">> Done replacing URL's values"
+        else
+            echo ">> Replacing database values ${WORDPRESS_OLD_DOMAIN} with ${WORDPRESS_NEW_DOMAIN} in network"
+            wp search-replace "${WORDPRESS_OLD_DOMAIN}" "${WORDPRESS_NEW_DOMAIN}" --allow-root --all-tables
+            echo ">> Done replacing URL's values in network mode"
+        fi
     fi
 }
 

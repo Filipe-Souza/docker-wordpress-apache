@@ -1,4 +1,4 @@
-# Wordpress with Apache in Docker
+# Wordpress with Apache and PHP 7.2 in Docker
 
 This project brings another but functionally Docker orchestration for developers mostly to setup an new or a existing
 Wordpress installation without headache.
@@ -79,6 +79,9 @@ the specified language.
   * **Required**: Set the new domain to be set in database. If the _WORDPRESS_OLD_DOMAIN_ variable is not specified, the
   script will setup the constants [WP_SITEURL](https://codex.wordpress.org/Editing_wp-config.php#WP_SITEURL) and
   [WP_HOME](https://codex.wordpress.org/Editing_wp-config.php#WP_HOME) on wp-config.php file with this value.
+* _WORDPRESS_TABLE_PREFIX_
+  * **Optional**: Set the table prefix of your previous installation. If the _WORDPRESS_TABLE_PREFIX_ variable is set,
+   the wp-config.php will be adjusted with the present value. If omitted, the default prefix wp_ is used.
 
 ### Example docker-compose file
 

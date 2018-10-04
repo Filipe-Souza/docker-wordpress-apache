@@ -16,7 +16,14 @@ function check_exit_status {
 }
 
 run_web_server() {
-    echo ">>> Starting Apache web server"
+    if [ "${WORDPRESS_ENV}" = "dev" ]; then
+        echo ">> Dev mode started, using php.ini for development optimization"
+        cp /tmp/php-dev.ini /usr/local/etc/php/php.ini
+        echo ">> Starting Apache web server"
+    else
+        echo ">> Starting Apache web server"
+    fi
+
     apache2-foreground
 }
 
@@ -41,6 +48,13 @@ setup_config_file() {
         wp config set DB_USER "${WORDPRESS_DB_USER}" --add --type=constant --quiet --allow-root
         wp config set DB_PASSWORD "${WORDPRESS_DB_PASSWORD}" --add --type=constant --quiet --allow-root
         echo ">> Done setting database constants"
+
+        if [ -z ${WORDPRESS_TABLE_PREFIX} ]; then
+            echo "> Leaving the default table prefix to wp_"
+        else
+            echo "> Setting up ${WORDPRESS_TABLE_PREFIX} as table prefix for wp-config.php"
+            wp config set table_prefix "${WORDPRESS_TABLE_PREFIX}" --add --type=variable --allow-root
+        fi
 
         echo ">> Setting security constants"
         wp config set AUTH_KEY "$(pwgen -1 -c -n -s -y -r \`\"\'\\ 128)" --add --type=constant --quiet --allow-root
@@ -110,11 +124,11 @@ additional_flags() {
             done < "${WORDPRESS_EXTRA_FLAGS_FILE}"
         echo ">> Done reading flag(s) file, "
 
-        for var in "${!WP_@}"; do
+        for var in "${!WPF_@}"; do
             FLAG_NAME="$var"
-            FLAG_NAME=${FLAG_NAME#"WP_"}
+            FLAG_NAME=${FLAG_NAME#"WPF_"}
             echo ">> Setting up flag ${FLAG_NAME} with value ${!var}"
-            wp config set ${FLAG_NAME} ${!var} --add --type=constant --raw --quiet --allow-root
+            wp config set ${FLAG_NAME} ${!var} --add --type=constant --raw --quiet --allow-root --anchor="/* " --placement='before'
             echo ">> Done setting up flag"
         done
         echo ">>> Done setting up additional flags"
@@ -129,8 +143,8 @@ fix_permissions() {
         echo -e ">> Dev mode started, the group will have ${YELLOW}-rw-rwxr--${NC} permissions for files and ${YELLOW}-rwxrwxr-x${NC} for folders"
         echo -e ">> To edit this files, you must run ${YELLOW}chown \$USER:www-data -R .${NC} on the root directory on host"
         chgrp -R www-data ${WEB_ROOT_DIR}
-        find ${WEB_ROOT_DIR} -type d -exec chmod g+rw {} +
-        find ${WEB_ROOT_DIR} -type f -exec chmod g+r {} +
+        find ${WEB_ROOT_DIR} -type d -exec chmod g+rwx {} +
+        find ${WEB_ROOT_DIR} -type f -exec chmod g+rwx {} +
         chown -R 1000:1000 ${WEB_ROOT_DIR}
         find ${WEB_ROOT_DIR} -type d -exec chmod u+rwx {} +
         find ${WEB_ROOT_DIR} -type f -exec chmod u+rw {} +

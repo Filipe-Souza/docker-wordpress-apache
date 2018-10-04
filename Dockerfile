@@ -15,6 +15,7 @@ COPY ./docker-entrypoint/apache/000-default.conf /etc/apache2/sites-available/00
 COPY ./docker-entrypoint/apache/apache2-foreground.sh /usr/bin/apache2-foreground
 
 COPY ./docker-entrypoint/wordpress/.htaccess /tmp/.htaccess
+COPY ./docker-entrypoint/php/php-dev.ini /tmp/php-dev.ini
 
 COPY ./docker-entrypoint/debian/pwgen_2.08-1_amd64.deb /tmp/pwgen.deb
 

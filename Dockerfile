@@ -23,6 +23,7 @@ RUN apt-get update -y && apt-get install -y \
     mysql-client \
     curl \
     nano && \
+    docker-php-ext-install pdo pdo_mysql && \
     dpkg -i /tmp/pwgen.deb && rm -rf /var/lib/apt/lists/* /tmp/pwgen.deb
 
 RUN curl -o /usr/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar

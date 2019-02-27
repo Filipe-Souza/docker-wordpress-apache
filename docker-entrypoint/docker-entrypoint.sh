@@ -3,6 +3,7 @@
 RED='\033[0;31m'
 NC='\033[0m'
 YELLOW='\033[1;33m'
+GREEN='\033[0;32m'
 
 cd "${WEB_ROOT_DIR}" || exit
 
@@ -19,10 +20,15 @@ run_web_server() {
     if [ "${WORDPRESS_ENV}" = "dev" ]; then
         echo ">> Dev mode started, using php.ini for development optimization"
         cp /tmp/php-dev.ini /usr/local/etc/php/php.ini
-        echo ">> Starting Apache web server"
-    else
-        echo ">> Starting Apache web server"
     fi
+
+    echo ">> Starting Apache web server"
+    echo "${GREEN}+-------------------------+
+          |                         |
+          |    APACHE IS RUNNING    |
+          |        HAVE FUN !       |
+          |                         |
+          +-------------------------+${NC}"
 
     apache2-foreground
 }

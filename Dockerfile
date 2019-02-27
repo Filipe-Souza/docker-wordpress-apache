@@ -1,7 +1,7 @@
 FROM wordpress:apache
 
 LABEL com.lullabies.vendor="Lullabies"
-LABEL com.lullabies.version="2.0"
+LABEL com.lullabies.version="3.0"
 LABEL com.lullabies.description="Base image containing Apache 2.4, PHP 7.2, MySQL Client, cURL, Pwgen 2.08, WP CLI and Nano editor"
 
 ENV WEB_ROOT_DIR="/var/www/html"
@@ -13,6 +13,8 @@ COPY ./docker-entrypoint/docker-entrypoint.sh /start
 
 COPY ./docker-entrypoint/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
 COPY ./docker-entrypoint/apache/apache2-foreground.sh /usr/bin/apache2-foreground
+COPY ./docker-entrypoint/apache/envvars /etc/apache2/envvars
+
 
 COPY ./docker-entrypoint/wordpress/.htaccess /tmp/.htaccess
 COPY ./docker-entrypoint/php/php-dev.ini /tmp/php-dev.ini

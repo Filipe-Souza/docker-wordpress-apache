@@ -146,14 +146,12 @@ fix_permissions() {
     chown www-data:www-data  -R .
 
     if [ "${WORDPRESS_ENV}" = "dev" ]; then
-        echo -e ">> Dev mode started, the group will have ${YELLOW}-rw-rwxr--${NC} permissions for files and ${YELLOW}-rwxrwxr-x${NC} for folders"
-        echo -e ">> To edit this files, you must run ${YELLOW}chown \$USER:www-data -R .${NC} on the root directory on host"
+        echo -e ">> Dev mode started, the user www-data (33) and group www-data(33) will have all permissions and ownerships."
         chgrp -R www-data ${WEB_ROOT_DIR}
+        echo -e ">> Modifying permissions to Group can Read/Write/Execute on all directories"
         find ${WEB_ROOT_DIR} -type d -exec chmod g+rwx {} +
+        echo -e ">> Modifying permissions to Group can Read/Write/Execute on all files"
         find ${WEB_ROOT_DIR} -type f -exec chmod g+rwx {} +
-        find ${WEB_ROOT_DIR} -type d -exec chmod u+rwx {} +
-        find ${WEB_ROOT_DIR} -type f -exec chmod u+rwx {} +
-        find ${WEB_ROOT_DIR} -type d -exec chmod g+s {} +
     else
         echo -e ">> Prod mode started, the group will have ${YELLOW}-rw-r--r--${NC} permissions for files and ${YELLOW}-rwxr-xr-x${NC} for folders"
         find . -type d -exec chmod 755 {} \;
